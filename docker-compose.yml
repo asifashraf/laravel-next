@@ -1,0 +1,67 @@
+version: "3"
+services:
+
+  mysql_ts_api:
+    image: mysql:latest
+    container_name: mysql_ts_api
+    environment:
+      MYSQL_ROOT_PASSWORD: asdfasdf
+      MYSQL_DATABASE: tsapi
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: asdfasdf
+    ports:
+      - "8095:3306"
+    volumes:
+      - ${MYSQL_DATA_DIR}:/var/lib/mysql
+      - ./my.cnf:/etc/my.cnf
+      - ./data-mount:/data-mount
+    restart: always
+
+  ts-api:
+    container_name: ts-api
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+    ports:
+      - "8096:9000"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql_ts_api
+
+
+
+  phpmyadmin_ts_api:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin_ts_api
+    environment:
+      PMA_HOST: mysql_ts_api
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: asdfasdf
+    ports:
+      - "8097:80"
+    restart: always
+    depends_on:
+      - mysql_ts_api
+
+
+  ts-ui:
+    container_name: ts-ui
+    build:
+      context: .
+      dockerfile: ./ui/Dockerfile
+    ports:
+      - "8097:3000"
+    volumes:
+      - .:/app
+    depends_on:
+      - ts-api
+
+  portainer_ts_api_mysql:
+    image: portainer/portainer-ce:latest
+    container_name: portainer_ts_api_mysql
+    ports:
+      - "8098:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
