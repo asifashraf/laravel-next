@@ -19,10 +19,12 @@ else
  case $action in
 
   "g.push")
+
 	  source cdln
     git add .
     git commit -m "$2"
     git push
+    
 	;;
     
   *)
