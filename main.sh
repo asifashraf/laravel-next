@@ -10,8 +10,8 @@ action=$1
 if [[ -z "$action" || "$action" == "--help" ]]; then
   clear
   echo "  ====== Utility ======"
-  echo " g.         push              git@github.com:asifashraf/laravel-next.git"
-
+  echo "g.         push              git@github.com:asifashraf/laravel-next.git"
+  echo "d.         up,build               docker up, build contexts"
 
 
 
@@ -19,11 +19,23 @@ else
  case $action in
 
   "g.push")
-
 	  source cdln
     git add .
     git commit -m "$2"
     git push
+    
+	;;
+
+
+  "d.build")
+	  source cdln
+    docker-compose build
+    
+	;;
+
+  "d.up")
+	  source cdln
+    docker-compose up -d
     
 	;;
     
